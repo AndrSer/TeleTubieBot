@@ -20,13 +20,12 @@ bot = telebot.TeleBot(get_config('config.cfg').get('TOKEN'))
 
 @bot.message_handler(commands=['start', 'help'])
 def start_help_message(message: telebot.types.Message):
-    text_message = 'Чтобы начать работу введите команду в следующем формате:\n<Имя валюты>, \
-                   <В какую валюту перевести>, \
-                   <Количество переводимой валюты>\n \
-                   Имя валюты должно совпадать с именем доступных валют. Пример:\n \
-                   Доллар США, Рубль, 200\n \
-                   Для получения списка доступных валют введите /values\n \
-                   Для получения текущего курса введите /daily'
+    text_message = 'Чтобы начать работу введите команду в следующем формате: \n' \
+                   '<Имя валюты>, <В какую валюту перевести>, <Количество переводимой валюты>\n' \
+                   'Имя валюты должно совпадать с именем доступных валют. Пример:\n' \
+                   'Доллар США, Рубль, 200\n' \
+                   'Для получения списка доступных валют введите /values\n' \
+                   'Для получения текущего курса введите /daily'
     bot.reply_to(message, text_message)
 
 
@@ -42,27 +41,33 @@ def output_values_currencies(message: telebot.types.Message):
 def daily_currencies(message: telebot.types.Message):
     text_message = 'Текущий курс доступных валют:\n'
     currencies = utils.CurrenciesConverter.get_daily_currencies()
-    text_message += '\n'.join(currencies.keys()).join(' -> ').join(currencies.values())
+    temp_string = ''
+    for i, k in currencies.items():
+        temp_string += f'{i} -> {k}\n'
+    text_message += temp_string
     bot.reply_to(message, text_message)
 
 
 @bot.message_handler(content_types=['text'])
 def convert(message: telebot.types.Message):
     try:
-        if not re.fullmatch("^\\w+\\s\\w+, \\w+, \\d+$|^\\w+, \\w+, \\d+$|^\\w+, \\w+\\s\\w+, \\d+$", message.text):
+        regex_pattern = '^\\w+\\s\\w+, \\w+, \\d+$|^\\w+, \\w+, \\d+$|^\\w+, \\w+\\s\\w+, \\d+$|^\\w+\\s\\w+, ' \
+                        '\\w+\\s\\w+, \\d+$'
+        if not re.fullmatch(regex_pattern, message.text):
             raise utils.ConversionException('Формат строки не совпадает с необходимым.')
         parse_response = message.text.split(', ')
         result_convert = utils.CurrenciesConverter.convert(parse_response[0], parse_response[1], parse_response[2])
     except utils.ConversionException as e:
-        bot.reply_to(message, f'Ошибка конвертирования\n {e}')
+        bot.reply_to(message, f'Ошибка конвертирования:\n {e}')
     except utils.ResponseException as e:
-        bot.reply_to(message, f'Ошибка получения курса валют\n {e}')
+        bot.reply_to(message, f'Ошибка получения курса валют:\n {e}')
     except Exception as e:
-        bot.reply_to(message, f'Не удалось обработать команду\n {e}')
+        bot.reply_to(message, f'Не удалось обработать команду:\n {e}')
     else:
-        text = f"""Сконвертировано:
-                       {parse_response[0].strip()} в {parse_response[1].strip()} с количеством {parse_response[2].strip()}
-                       {str(round(result_convert, 2))}"""
+        text = 'Сконвертировано:\n' \
+              f'{parse_response[0].strip()} в {parse_response[1].strip()}.\n ' \
+              f'С количеством: {parse_response[2].strip()}\n' \
+              f'{str(round(result_convert, 2))}'
         bot.send_message(message.chat.id, text)
 
 

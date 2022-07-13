@@ -23,8 +23,8 @@ class CurrenciesConverter:
     @staticmethod
     def get_daily_currencies():
         request_json = CurrenciesConverter.get_response()
-        currencies = {request_json['Valute']['USD']['Name']: request_json['Valute']['USD']['Value'],
-                      request_json['Valute']['EUR']['Name']: request_json['Valute']['EUR']['Value']}
+        currencies = {request_json['Valute']['USD']['Name']: str(request_json['Valute']['USD']['Value']),
+                      request_json['Valute']['EUR']['Name']: str(request_json['Valute']['EUR']['Value'])}
         return currencies
 
     @staticmethod
