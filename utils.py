@@ -44,20 +44,22 @@ class CurrenciesConverter:
             raise ConversionException('Валюты одинаковы. Невозможно сконвертировать одинаковые валюты.')
 
         currencies = CurrenciesConverter.get_available_currencies()
+        currencies = {key.strip().lower(): value for key, value in currencies.items()}
+        print(currencies)
 
-        if quote not in currencies.keys() or base not in currencies.keys():
+        if quote.strip().lower() not in currencies or base.strip().lower() not in currencies:
             raise ConversionException('Валюты не в списке допустимых.')
 
         if base.strip().lower() == 'рубль':
-            result_convert = float(request_json['Valute'][currencies[quote.strip()]]['Value']) * \
-                             int(amount)
+            result_convert = float(request_json['Valute'][currencies[quote.strip().lower()]]['Value']) * \
+                             float(amount)
         elif quote.strip().lower() == 'рубль':
-            result_convert = float(request_json['Valute'][currencies[quote.strip()]]['Value']) / \
-                             int(amount)
+            result_convert = float(request_json['Valute'][currencies[quote.strip().lower()]]['Value']) / \
+                             float(amount)
         elif quote.strip().lower() != 'рубль' and base.strip().lower() != 'рубль':
-            result_convert = float(request_json['Valute'][currencies[quote.strip()]]['Value']) / \
-                             float(request_json['Valute'][currencies[base.strip()]]['Value']) * \
-                             int(amount)
+            result_convert = float(request_json['Valute'][currencies[quote.strip().lower()]]['Value']) / \
+                             float(request_json['Valute'][currencies[base.strip().lower()]]['Value']) * \
+                             float(amount)
         return result_convert
 
 

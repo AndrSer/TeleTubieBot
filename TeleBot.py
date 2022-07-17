@@ -51,8 +51,8 @@ def daily_currencies(message: telebot.types.Message):
 @bot.message_handler(content_types=['text'])
 def convert(message: telebot.types.Message):
     try:
-        regex_pattern = '^\\w+\\s\\w+, \\w+, \\d+$|^\\w+, \\w+, \\d+$|^\\w+, \\w+\\s\\w+, \\d+$|^\\w+\\s\\w+, ' \
-                        '\\w+\\s\\w+, \\d+$'
+        regex_pattern = '^\\w+ \\w+, \\w+, \\d+$|^\\w+, \\w+ \\w+, \\d+$|^\\w+, \\w+, \\d+$|^\\w+ \\w+, \\w+, ' \
+                        '\\d+.\\d+$|^\\w+, \\w+ \\w+, \\d+.\\d+$|^\\w+, \\w+, \\d+.\\d+$'
         if not re.fullmatch(regex_pattern, message.text):
             raise utils.ConversionException('Формат строки не совпадает с необходимым.')
         parse_response = message.text.split(', ')
@@ -65,9 +65,9 @@ def convert(message: telebot.types.Message):
         bot.reply_to(message, f'Не удалось обработать команду:\n {e}')
     else:
         text = 'Сконвертировано:\n' \
-              f'{parse_response[0].strip()} в {parse_response[1].strip()}.\n ' \
-              f'С количеством: {parse_response[2].strip()}\n' \
-              f'{str(round(result_convert, 2))}'
+               f'{parse_response[0].strip()} в {parse_response[1].strip()}.\n ' \
+               f'С количеством: {parse_response[2].strip()}\n' \
+               f'{str(round(result_convert, 2))}'
         bot.send_message(message.chat.id, text)
 
 
