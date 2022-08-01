@@ -45,7 +45,7 @@ class CurrenciesConverter:
 
         currencies = CurrenciesConverter.get_available_currencies()
         currencies = {key.strip().lower(): value for key, value in currencies.items()}
-        print(currencies)
+       # print(currencies)
 
         if quote.strip().lower() not in currencies or base.strip().lower() not in currencies:
             raise ConversionException('Валюты не в списке допустимых.')
